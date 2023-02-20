@@ -15,20 +15,16 @@
 # This file is an adapted version of
 # https://github.com/ros-planning/moveit_resources/blob/ca3f7930c630581b5504f3b22c40b4f82ee6369d/panda_moveit_config/launch/demo.launch.py
 
+
 import os
-
-from ament_index_python.packages import get_package_share_directory
-from launch import LaunchDescription
-from launch.actions import (DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription,
-                            Shutdown)
-from launch.conditions import IfCondition
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
-from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
 import yaml
-
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from launch.actions import ExecuteProcess
+from ament_index_python.packages import get_package_share_directory
 from moveit_configs_utils import MoveItConfigsBuilder
+
+from launch.actions import (DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription,Shutdown)
 
 
 def load_yaml(package_name, file_path):
@@ -49,31 +45,32 @@ def generate_launch_description():
             .trajectory_execution("config/moveit_controllers.yaml")
             .robot_description_semantic("srdf/franka.srdf")
             .robot_description(file_path=get_package_share_directory('franka_description') + '/robots/franka.urdf')
+            .moveit_cpp("config/notebook.yaml")
             .to_moveit_configs()
             )
 
 
 
     # Start the actual move_group node/action server
-    run_move_group_node = Node(
-        package='moveit_ros_move_group',
-        executable='move_group',
-        output='screen',
-        parameters=[
-            moveit_config.to_dict()
-        ],
-    )
+    #run_move_group_node = Node(
+    #    package='moveit_ros_move_group',
+    #    executable='move_group',
+    #    output='screen',
+    #    parameters=[
+    #        moveit_config.to_dict()
+    #    ],
+    #)
 
     # RViz
-    rviz_base = os.path.join(get_package_share_directory('franka_moveit_config'), 'rviz')
-    rviz_full_config = os.path.join(rviz_base, 'moveit.rviz')
+    #rviz_base = os.path.join(get_package_share_directory('franka_moveit_config'), 'rviz')
+    #rviz_full_config = os.path.join(rviz_base, 'moveit.rviz')
 
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',
         name='rviz2',
         output='log',
-        arguments=['-d', rviz_full_config],
+        #arguments=['-d', rviz_full_config],
         parameters=[
             moveit_config.robot_description,
             moveit_config.robot_description_semantic,
@@ -84,12 +81,28 @@ def generate_launch_description():
     )
 
     # Publish TF
+    static_tf = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        name="static_transform_publisher",
+        output="log",
+        arguments=["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "world", "panda_link0"],
+    )
+
     robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='robot_state_publisher',
         output='both',
         parameters=[moveit_config.robot_description],
+    )
+
+    joint_state_publisher = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher',
+        parameters=[
+            {'source_list': ['franka/joint_states'], 'rate': 30}],
     )
 
     ros2_controllers_path = os.path.join(
@@ -120,28 +133,17 @@ def generate_launch_description():
             )
         ]
 
-    joint_state_publisher = Node(
-        package='joint_state_publisher',
-        executable='joint_state_publisher',
-        name='joint_state_publisher',
-        parameters=[
-            {'source_list': ['franka/joint_states', 'panda_gripper/joint_states'], 'rate': 30}],
-    )
 
-    #gripper_launch_file = IncludeLaunchDescription(
-    #    PythonLaunchDescriptionSource([PathJoinSubstitution(
-    #        [FindPackageShare('franka_gripper'), 'launch', 'gripper.launch.py'])]),
-    #    launch_arguments={'robot_ip': 192.168.106.39,
-    #                      use_fake_hardware_parameter_name: false}.items(),
-    #)
+    notebook_dir = "~"
+    start_notebook = ExecuteProcess(cmd = ["cd {} && python3 -m notebook --allow-root".format(notebook_dir)], shell = True, output = "screen")
     return LaunchDescription(
         [
+         start_notebook,
          rviz_node,
+         static_tf,
          robot_state_publisher,
-         run_move_group_node,
-         ros2_control_node,
          joint_state_publisher,
-    #     gripper_launch_file
+         ros2_control_node,
          ]
         + load_controllers
     )

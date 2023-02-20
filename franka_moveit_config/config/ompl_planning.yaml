@@ -1,3 +1,12 @@
+planning_plugin: ompl_interface/OMPLPlanner
+request_adapters: >-
+  default_planner_request_adapters/AddTimeOptimalParameterization
+  default_planner_request_adapters/ResolveConstraintFrames
+  default_planner_request_adapters/FixWorkspaceBounds
+  default_planner_request_adapters/FixStartStateBounds
+  default_planner_request_adapters/FixStartStateCollision
+  default_planner_request_adapters/FixStartStatePathConstraints
+start_state_max_bounds_error: 0.1
 planner_configs:
   SBLkConfigDefault:
     type: geometric::SBL
@@ -14,7 +23,7 @@ planner_configs:
   BKPIECEkConfigDefault:
     type: geometric::BKPIECE
     range: 0.0  # Max motion added to tree. ==> maxDistance_ default: 0.0, if 0.0, set on setup()
-    border_fraction: 0.9  # Fraction fof time focused on boarder default: 0.9
+    border_fraction: 0.9  # Fraction of time focused on boarder default: 0.9
     failed_expansion_score_factor: 0.5  # When extending motion fails, scale score by factor. default: 0.5
     min_valid_path_fraction: 0.5  # Accept partially valid moves above fraction. default: 0.5
   KPIECEkConfigDefault:
@@ -55,7 +64,7 @@ planner_configs:
   FMTkConfigDefault:
     type: geometric::FMT
     num_samples: 1000  # number of states that the planner should sample. default: 1000
-    radius_multiplier: 1.1  # multiplier used for the nearest neighbors search radius. default: 1.1
+    radius_multiplier: 1.1  # multiplier used for the nearest neighbors search radus. default: 1.1
     nearest_k: 1  # use Knearest strategy. default: 1
     cache_cc: 1  # use collision checking cache. default: 1
     heuristics: 0  # activate cost to go heuristics. default: 0
@@ -175,4 +184,29 @@ panda_arm_hand:
     - SPARSkConfigDefault
     - SPARStwokConfigDefault
     - TrajOptDefault
-
+hand:
+  planner_configs:
+    - SBLkConfigDefault
+    - ESTkConfigDefault
+    - LBKPIECEkConfigDefault
+    - BKPIECEkConfigDefault
+    - KPIECEkConfigDefault
+    - RRTkConfigDefault
+    - RRTConnectkConfigDefault
+    - RRTstarkConfigDefault
+    - TRRTkConfigDefault
+    - PRMkConfigDefault
+    - PRMstarkConfigDefault
+    - FMTkConfigDefault
+    - BFMTkConfigDefault
+    - PDSTkConfigDefault
+    - STRIDEkConfigDefault
+    - BiTRRTkConfigDefault
+    - LBTRRTkConfigDefault
+    - BiESTkConfigDefault
+    - ProjESTkConfigDefault
+    - LazyPRMkConfigDefault
+    - LazyPRMstarkConfigDefault
+    - SPARSkConfigDefault
+    - SPARStwokConfigDefault
+    - TrajOptDefaulti
