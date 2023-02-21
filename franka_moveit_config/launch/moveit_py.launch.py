@@ -41,10 +41,10 @@ def load_yaml(package_name, file_path):
 def generate_launch_description():
 
     moveit_config = (
-            MoveItConfigsBuilder("franka")
+            MoveItConfigsBuilder(robot_name="franka", package_name="franka_moveit_config")
             .trajectory_execution("config/moveit_controllers.yaml")
-            .robot_description_semantic("srdf/franka.srdf")
-            .robot_description(file_path=get_package_share_directory('franka_description') + '/robots/franka.urdf')
+            .robot_description_semantic("config/franka.srdf")
+            .robot_description("config/franka.urdf")
             .moveit_cpp("config/notebook.yaml")
             .to_moveit_configs()
             )
