@@ -42,6 +42,7 @@ def generate_launch_description():
 
     moveit_config = (
             MoveItConfigsBuilder(robot_name="franka", package_name="franka_moveit_config")
+            .planning_pipelines("ompl", ["ompl", "chomp", "pilz_industrial_motion_planner"])
             .trajectory_execution("config/moveit_controllers.yaml")
             .robot_description_semantic("config/franka.srdf")
             .robot_description("config/franka.urdf")
