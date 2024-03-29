@@ -20,8 +20,6 @@
       <xacro:macro name="configure_joint" params="joint_name initial_position">
         <joint name="${joint_name}">
           <param name="initial_position">${initial_position}</param>
-	  <command_interface name="effort"/>
-          <command_interface name="velocity"/>
           <command_interface name="position"/>
           <state_interface name="position"/>
           <state_interface name="velocity"/>
