@@ -13,6 +13,7 @@
   <depend>control_msgs</depend>
   <depend>controller_interface</depend>
   <depend>franka_msgs</depend>
+  <depend>ros2_control</depend>
   <depend>franka_semantic_components</depend>
   <depend>generate_parameter_library</depend>
   <depend>pluginlib</depend>
