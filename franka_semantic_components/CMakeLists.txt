@@ -18,6 +18,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
     franka_msgs
     geometry_msgs
     sensor_msgs
+    controller_interface
     hardware_interface
     rclcpp_lifecycle
     urdf)
