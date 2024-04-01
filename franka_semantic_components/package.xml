@@ -13,6 +13,7 @@
   <depend>franka_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>controller_interface</depend>
   <depend>hardware_interface</depend>
   <depend>franka_hardware</depend>
 
